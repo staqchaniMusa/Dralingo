@@ -1,0 +1,32 @@
+{
+  "project_info": {
+    "project_number": "1079513832039",
+    "firebase_url": "https://app-and-web-firebase-default-rtdb.firebaseio.com",
+    "project_id": "app-and-web-firebase",
+    "storage_bucket": "app-and-web-firebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079513832039:ios:bb364a1d220888fe2a92c2",
+        "android_client_info": {
+          "package_name": "com.dralingo.dralingo"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoSUYxK8b-t-7PEgm4k20hFmEom3J8HvY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 0
+        },
+        "appinvite_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

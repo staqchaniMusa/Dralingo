@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace CBS.Scriptable
+{
+    [CreateAssetMenu(fileName = "AuthPrefabs", menuName = "CBS/Add new Auth Prefabs")]
+    public class AuthPrefabs : CBSScriptable
+    {
+        public override string ResourcePath => "Scriptable/AuthPrefabs";
+
+        public GameObject LoginForm;
+        public GameObject Background;
+    }
+
+}
