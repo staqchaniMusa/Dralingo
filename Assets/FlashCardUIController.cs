@@ -4,6 +4,7 @@ using DanielLochner.Assets.SimpleScrollSnap;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FlashCardUIController : MonoBehaviour
 {
@@ -64,7 +65,7 @@ public class FlashCardUIController : MonoBehaviour
         {
             var card = flashCards.flashcards[i];
             var newPanel = SimpleScrollSnap.AddToBack(FlasCard.gameObject);
-            newPanel?.GetComponent<FlasCard>().SetCardData(card,OnLoadContent,()=>FullScreen(true));
+            newPanel?.GetComponent<FlasCard>().SetCardData(card,OnLoadContent,(texture)=>FullScreen(texture));
             newPanel?.gameObject.SetActive(false);
         }
         //LoadContent(0);
@@ -124,12 +125,23 @@ public class FlashCardUIController : MonoBehaviour
         RenderTexture.active = null;
     }
 
-    public void FullScreen(bool fullscreen)
+    public void FullScreen(Texture texture)
     {
-        fullScreenUI.SetActive(fullscreen);
+        fullScreenUI.GetComponentInChildren<RawImage>().texture = texture;
+        fullScreenUI.SetActive(true);
     }
-
-   
+    int barValue;
+    public void OnScrollValueChanges(float val)
+    {
+        Debug.Log("Bar Value : " + val);
+        barValue = (int)val;
+    }
+   public void GotoPage(Scrollbar bar)
+    {
+        int current = (int)bar.value;
+        Debug.Log("Current Value: " + current);
+        SimpleScrollSnap.GoToPanel(barValue);
+    }
     public void Back()
     {
         //AppContext.instance.game.ShowLessonDetail(currentLesson);

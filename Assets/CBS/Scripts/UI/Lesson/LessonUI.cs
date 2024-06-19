@@ -52,7 +52,7 @@ public class LessonUI : MonoBehaviour
     }
     bool checkIfNotNull(int lesson)
     {
-        return AppContext.instance.game.profile != null && AppContext.instance.game.profile.UserLessons != null && AppContext.instance.game.profile.UserLessons.Count > lesson - 1;
+        return AppContext.instance.game.profile != null && AppContext.instance.game.profile.UserLessons != null && AppContext.instance.game.profile.UserLessons.Count > lesson;
     }
     bool isLessonUnlocked(int lesson)
     {

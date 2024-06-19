@@ -1,3 +1,4 @@
+using CBS.UI;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -7,13 +8,13 @@ using UnityEngine.UI;
 public class FlasCard : MonoBehaviour
 {
 
-    [SerializeField] private Image cardHolder;
+    [SerializeField] private RawImage cardHolder;
     public VideoController videoController;
     private FlashCardData Card;
     public bool loadingContent;
     public bool contentTypeisImage {  get; private set; }
     bool init = false;
-
+    private Texture thumbnail;
     private void Start()
     {
         init = true;
@@ -27,8 +28,8 @@ public class FlasCard : MonoBehaviour
        // Debug.Log("Loading Content...");
     }
     Action<FlasCard> OnLoadContent;
-    Action OnFullScreen;
-    internal void SetCardData(FlashCardData card, Action<FlasCard> onLoad,Action onFullscreen)
+    Action<Texture> OnFullScreen;
+    internal void SetCardData(FlashCardData card, Action<FlasCard> onLoad,Action<Texture> onFullscreen)
     {
         this.Card = card;
         this.OnLoadContent = onLoad;
@@ -38,7 +39,8 @@ public class FlasCard : MonoBehaviour
 
     public void FullScreen()
     {
-        OnFullScreen?.Invoke();
+        thumbnail = this.Card.isVideo ? videoController.player.texture : cardHolder.texture;
+        OnFullScreen?.Invoke(thumbnail);
     }
     private void OnEnable()
     {
@@ -108,7 +110,19 @@ public class FlasCard : MonoBehaviour
     IEnumerator DownloadImageFromUrl(string url)
     {
         string httpUrl = getUrl(url);
-        Debug.Log(httpUrl);
+        Debug.Log(Application.persistentDataPath);
+        string[] split = httpUrl.Split('=');
+        Debug.Log("Token = " + split[split.Length - 1]);
+        if(split.Length > 1)
+        {
+            Texture2D savedTex = FileUtil.GetImage(split[split.Length -1]);
+            if(savedTex != null)
+            {
+                SetTexture(savedTex);
+                Debug.Log("Loading Image from local storage " + savedTex.width);
+                yield break;
+            }
+        }
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(httpUrl);
         yield return www.SendWebRequest();
 
@@ -117,9 +131,20 @@ public class FlasCard : MonoBehaviour
             AppContext.instance.game.ShowError("Flash Card Load Error!");
             yield break;
         }
+        Texture2D texture = DownloadHandlerTexture.GetContent(www);
+        Debug.Log(texture.width + "x" + texture.height);
+        if (texture != null && split.Length > 1)
+        {
+            FileUtil.SaveImage(texture, split[split.Length - 1]);
+        }
+        SetTexture(texture);
+    }
+
+    private void SetTexture(Texture2D texture)
+    {
         AppContext.instance.game.ShowLoading(false);
         loadingContent = false;
-        Texture2D texture = DownloadHandlerTexture.GetContent(www);
-        cardHolder.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+        cardHolder.texture = texture;
+        //cardHolder.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width,texture.height), Vector2.zero);
     }
 }

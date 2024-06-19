@@ -283,9 +283,28 @@ namespace DanielLochner.Assets.SimpleScrollSnap
                 throw new Exception("Invalid configuration.");
             }
         }
+        bool scrollbarDragging;
+        public void OnScrollerDown()
+        {
+            scrollbarDragging = true;
+        }
+        float currentElement;
+        public void OnScrollerUp()
+        {
+            scrollbarDragging = false;
+            CenteredPanel = (int)currentElement ;
+            
+            SnapToPanel();
+        }
+
+        public void OnValueChange(float newValue)
+        {
+            currentElement = newValue * NumberOfPanels;
+            //Debug.LogFormat("Centered Panel {0}", currentElement);
+        }
         private void Update()
         {
-            if (NumberOfPanels == 0) return;
+            if (NumberOfPanels == 0 || scrollbarDragging) return;
 
             HandleOcclusionCulling();
             HandleSelectingAndSnapping();

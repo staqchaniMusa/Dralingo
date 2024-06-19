@@ -101,7 +101,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
         {
             DataSnapshot snapshot = task.Result;
             string json = snapshot.GetRawJsonValue();
-           // Debug.Log(json);
+            //Debug.Log(json);
             try
             {
                 List<Dictionary<string, LessonData>> data = JsonConvert.DeserializeObject<List<Dictionary<string, LessonData>>>(json);
@@ -111,6 +111,8 @@ public class FirebaseDatabaseManager : MonoBehaviour
                 List<LessonData> lessons = new List<LessonData>();
                     data.ForEach(lData =>
                     {
+                        //Debug.Log(lData.ElementAt(0).Value.videoUrl);
+                        if(lData.Count>0)
                         lessons.Add(lData.ElementAt(0).Value);
                     });
                     result?.Invoke(lessons);
