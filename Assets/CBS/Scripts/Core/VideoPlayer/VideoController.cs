@@ -36,12 +36,14 @@ public class VideoController : MonoBehaviour
         player.prepareCompleted += OnPrepareCompleted;
         player.seekCompleted += OnSeekCompleted;
         player.started += OnStarted;
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
     }
 
   
     private void OnDisable()
     {
         //PauseVideo();
+        Screen.sleepTimeout = SleepTimeout.SystemSetting;
         inBackground = false;
         player.targetTexture.Release();
         player.errorReceived -= OnErrorReceived;
