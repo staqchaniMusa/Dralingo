@@ -27,7 +27,7 @@ public class LessonDetailUI : MonoBehaviour
     [SerializeField] Sprite playImage, pauseImage;
     [SerializeField] Sprite fullScreenSprite, normalScreenSprite;
     [SerializeField] Image fullScreenButton;
-
+    [SerializeField] Scrubber Scrubber;
     private string quizPrefsKey = "hasQuiz";
     private string flasCardPrefsKey = "hasFlashcard";
     private string infoPrefsKey = "hasSecretKey";
@@ -138,11 +138,14 @@ public class LessonDetailUI : MonoBehaviour
             quizBtn.onClick.AddListener(ShowQuiz);
             flashCardBtn.onClick.AddListener(ShowFlashCard);
             flashCardBtn.transform.GetChild(0).gameObject.SetActive(false);
+            Scrubber.enabled = false;
         }
         else
         {
             quizBtn.transform.GetChild(0).gameObject.SetActive(true);
             flashCardBtn.transform.GetChild(0).gameObject.SetActive(true);
+            Scrubber.enabled = true;
+            Scrubber.GetComponent<Slider>().enabled = true;
         }
         if (CBSModule.Get<CBSAuthModule>().isAdmin || checkIfNotNull(lesson) && AppContext.instance.game.profile.UserLessons[currentLesson].hasClearedLesson) infoBtn.onClick.AddListener(ShowSecretCode);
         /*if (PlayerPrefs.GetInt(quizPrefsKey + lesson) == 1) quizBtn.onClick.AddListener(ShowQuiz);

@@ -26,6 +26,7 @@ namespace CBS.UI
         {
             Auth = CBSModule.Get<CBSAuthModule>();
             AuthUIData = CBSScriptable.Get<AuthPrefabs>();
+            LoginFromCache();
         }
 
         private void OnDisable()
@@ -37,6 +38,21 @@ namespace CBS.UI
         {
             SoundsManager.instance.PlayClick();
             Auth.RegisterAccount();
+        }
+
+        private void LoginFromCache()
+        {
+            string email = PlayerPrefs.GetString("email");
+            if ((email) != "")
+            {
+                new PopupViewer().ShowLoadingPopup();
+                string password = PlayerPrefs.GetString("password");
+                Auth.OnLoginEvent += OnUserLogined;
+                MailInput.text = email;
+                PasswordInput.text = password;
+                //Debug.Log($"Logging in with email {MailInput.text} and password {PasswordInput.text}");
+                Auth.LoginWithMailAndPassword(email, password);
+            }
         }
         // button click
         public void OnLoginWithMail()

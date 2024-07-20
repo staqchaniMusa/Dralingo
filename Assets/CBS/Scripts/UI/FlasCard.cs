@@ -87,6 +87,11 @@ public class FlasCard : MonoBehaviour
         //AppContext.instance.game.ShowLoading(true);
         cardHolder.gameObject.SetActive(true);
         videoController.gameObject.SetActive(false);
+        if (!string.IsNullOrEmpty(Card.urlOrignal)){
+            if (gameObject.activeInHierarchy)
+             StartCoroutine(DownloadImageFromUrl(Card.urlOrignal));
+            return;
+        }
         AppContext.instance.DB.LoadFileUrl(url, result =>
         {
             if(gameObject.activeInHierarchy)
@@ -110,9 +115,8 @@ public class FlasCard : MonoBehaviour
     IEnumerator DownloadImageFromUrl(string url)
     {
         string httpUrl = getUrl(url);
-        Debug.Log(Application.persistentDataPath);
         string[] split = httpUrl.Split('=');
-        Debug.Log("Token = " + split[split.Length - 1]);
+        //Debug.Log("Token = " + split[split.Length - 1]);
         if(split.Length > 1)
         {
             Texture2D savedTex = FileUtil.GetImage(split[split.Length -1]);

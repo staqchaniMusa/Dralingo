@@ -78,6 +78,8 @@ namespace CBS
                     }
                     isAdmin = email.ToLower() == "admin@test.com" && password.ToLower() == "admin1234";
                     userId = task.Result.User.UserId;
+                    PlayerPrefs.SetString("email", email);
+                    PlayerPrefs.SetString("password", password);
                     LoginPostProcess();
                 });
             } catch (Exception e)
@@ -111,7 +113,8 @@ namespace CBS
         /// <param name="result"></param>
         public void Logout()
         {
-            
+            PlayerPrefs.SetString("email", "");
+            PlayerPrefs.SetString("password", "");
             LogoutProcces();
           
         }

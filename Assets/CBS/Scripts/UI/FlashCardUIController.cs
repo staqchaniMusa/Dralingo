@@ -2,7 +2,10 @@ using CBS.Scriptable;
 using CBS.UI;
 using DanielLochner.Assets.SimpleScrollSnap;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO.IsolatedStorage;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -60,18 +63,49 @@ public class FlashCardUIController : MonoBehaviour
         init = true;
         yield return StartCoroutine(ClearContent());
         prevLesson = currentLesson;
+        List<FlashCardData> imageCards = flashCards.flashcards.FindAll(card => !card.isVideo);
+        List<FlashCardData> videoCards = flashCards.flashcards.FindAll(card => card.isVideo);
+        List<FlashCardData> cards = new List<FlashCardData>();
+        int len = imageCards.Count > videoCards.Count ? imageCards.Count : videoCards.Count;
+        for (int i = 0; i < len; i++)
+        {
+            if (imageCards.Count > i) cards.Add(imageCards[i]);
+            if(videoCards.Count > i) cards.Add(videoCards[i]);
+        }
+        flashCards.flashcards = cards;
 
         for (int i = 0; i < flashCards.flashcards.Count; i++)
         {
             var card = flashCards.flashcards[i];
-            var newPanel = SimpleScrollSnap.AddToBack(FlasCard.gameObject);
+            var newPanel = SimpleScrollSnap.AddToFront(FlasCard.gameObject);
             newPanel?.GetComponent<FlasCard>().SetCardData(card,OnLoadContent,(texture)=>FullScreen(texture));
             newPanel?.gameObject.SetActive(false);
         }
         //LoadContent(0);
+        LoadFlashCardsUrl(0);
        Invoke(nameof(StartFlashCard),0.1f);
     }
 
+    void LoadFlashCardsUrl(int index) {
+        if (!gameObject.activeInHierarchy) return;
+        if(index >= flashCards.flashcards.Count) return;
+        if (flashCards.flashcards[index].isVideo)
+        {
+            
+            LoadFlashCardsUrl(++index);
+            return;
+        }
+        FlashCardData card = flashCards.flashcards[index];
+        AppContext.instance.DB.LoadFileUrl(card.url, result =>
+        {
+            flashCards.flashcards[index].urlOrignal = result.ToString();
+            //Debug.Log("Download File Url : " + result.ToString());
+            LoadFlashCardsUrl(++index);
+        }, error =>
+        {
+            LoadFlashCardsUrl(++index);
+        });
+    }
     private void OnLoadContent(FlasCard card)
     {
         currentFlashCard?.StopVideo();

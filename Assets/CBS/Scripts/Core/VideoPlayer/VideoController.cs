@@ -11,7 +11,9 @@ public class VideoController : MonoBehaviour
     public VideoPlayer player;
 
     bool isDone;
+    bool hasWatched;
     bool isSeeking;
+    bool isScrubbing;
     int bufferCount;
     float previousFrameCount;
 
@@ -20,6 +22,7 @@ public class VideoController : MonoBehaviour
     public bool IsLooping { get { return player.isLooping; } }
     public bool IsPrepared { get { return player.isPrepared; } }
     public bool IsDone { get { return isDone; } }
+    public bool HasWatched { get { return hasWatched; } }
     public double Time {  get { return player.time; } }
     public ulong Duration { get { return (ulong)(player.frameCount / player.frameRate); } }
     public double NTime { get { return Time / Duration; } }
@@ -54,11 +57,21 @@ public class VideoController : MonoBehaviour
         player.started -= OnStarted;
     }
 
+    public void StartScrub()
+    {
+        isScrubbing = true;
+    }
 
+    public void StopScrub()
+    {
+        isScrubbing = false;
+        Seek(slider.value);
+    }
     // Update is called once per frame
     void Update()
     {
-        if (!player.isPrepared || !player.isPlaying) return;
+        if (!player.isPrepared || !player.isPlaying || isScrubbing) return;
+        if(!isSeeking)
         slider.value = (float)NTime;
         // Check if frame count has changed
         if (slider.value == previousFrameCount)
@@ -67,7 +80,10 @@ public class VideoController : MonoBehaviour
             bufferCount++;
         }
         else bufferCount = 0;
-
+        if(!hasWatched && slider.value > 0.8f)
+        {
+            OnWatchedVideo();
+        }
         // Update previous frame count
         previousFrameCount = slider.value;
     }
@@ -76,10 +92,18 @@ public class VideoController : MonoBehaviour
     {
         
     }
-
+    private void OnWatchedVideo()
+    {
+        if(!HasWatched)
+        {
+            hasWatched = true;
+            OnVideoCompleted?.Invoke();
+        }
+    }
     private void OnSeekCompleted(VideoPlayer source)
     {
         isDone = false;
+        isSeeking = false;
         PlayVideo();
     }
     bool inBackground;
@@ -87,6 +111,12 @@ public class VideoController : MonoBehaviour
     {
         isDone = false;
         OnVideoPlayerReady?.Invoke();
+        //Debug.LogFormat("Video Resolution {0} x {1}", source.texture.width, source.texture.height);
+        //Debug.LogFormat("Target Texture Resolution {0} x {1}", source.targetTexture.width, source.targetTexture.height);
+        source.targetTexture.Release();
+        source.targetTexture.width = source.texture.width;
+        source.targetTexture.height = source.texture.height;
+        source.targetTexture.Create();
         //PlayVideo();
         // Debug.Log("Video Player is Ready");
         if (!inBackground)
@@ -103,7 +133,7 @@ public class VideoController : MonoBehaviour
     private void OnLoopPointReached(VideoPlayer source)
     {
         isDone = true;
-        OnVideoCompleted?.Invoke();
+        //OnVideoCompleted?.Invoke();
     }
 
     private void OnErrorReceived(VideoPlayer source, string message)
@@ -153,6 +183,7 @@ public class VideoController : MonoBehaviour
         if(!player.canSetTime) return ;
         if (!player.isPrepared) return;
         //player.Stop();
+        isSeeking = true;
         nTime = Mathf.Clamp01(nTime);
         player.time = nTime * Duration;
         OnVidoPlayStatusChanged?.Invoke();

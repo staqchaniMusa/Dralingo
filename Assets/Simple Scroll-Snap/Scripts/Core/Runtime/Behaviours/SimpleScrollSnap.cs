@@ -299,7 +299,8 @@ namespace DanielLochner.Assets.SimpleScrollSnap
 
         public void OnValueChange(float newValue)
         {
-            currentElement = newValue * NumberOfPanels;
+            currentElement = Mathf.Clamp(newValue * NumberOfPanels,0,NumberOfPanels - 1);
+            
             //Debug.LogFormat("Centered Panel {0}", currentElement);
         }
         private void Update()
@@ -604,6 +605,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
         }
         private void SnapToPanel()
         {
+            
             float xOffset = (movementType == MovementType.Free || movementAxis == MovementAxis.Horizontal) ? Viewport.rect.width  / 2f : 0f;
             float yOffset = (movementType == MovementType.Free || movementAxis == MovementAxis.Vertical)   ? Viewport.rect.height / 2f : 0f;
             Vector2 offset = new Vector2(xOffset, yOffset);
@@ -683,9 +685,9 @@ namespace DanielLochner.Assets.SimpleScrollSnap
             }
         }
 
-        public void AddToFront(GameObject panel)
+        public GameObject AddToFront(GameObject panel)
         {
-            Add(panel, 0);
+            return Add(panel, 0);
         }
         public GameObject AddToBack(GameObject panel)
         {

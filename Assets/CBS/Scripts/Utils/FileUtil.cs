@@ -11,7 +11,7 @@ public class FileUtil
     // save image in device for later use
     public static void SaveImage(Texture2D image, string filename)
     {
-        string savePath = Application.persistentDataPath;
+        string savePath = Application.persistentDataPath + "/Data";
         try
         {
             // check if directory exists, if not create it
@@ -31,7 +31,7 @@ public class FileUtil
     // get texture stored in device if exists, if doesn't exists, return null
     public static Texture2D GetImage(string fileName,int width = 1, int height = 1)
     {
-        string savePath = Application.persistentDataPath;
+        string savePath = Application.persistentDataPath + "/Data";
         
         string path = Path.Combine(savePath, fileName);
         try
@@ -39,7 +39,7 @@ public class FileUtil
             //first check if texture exists , if exists, start fetching
             if (File.Exists(path))
             {
-                byte[] bytes = File.ReadAllBytes(savePath + fileName);
+                byte[] bytes = File.ReadAllBytes(path);
                 Texture2D texture = new Texture2D(2, 2);
                 if(texture.LoadImage(bytes))
                 return texture;
