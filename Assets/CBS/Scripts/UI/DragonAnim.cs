@@ -16,7 +16,11 @@ public class DragonAnim : MonoBehaviour
     {
         
     }
+    public void PlayFireSound()
+    {
 
+        SoundsManager.instance.PlayClick(12);
+    }
     public void OpenFire()
     {
         Fire.SetActive(true);

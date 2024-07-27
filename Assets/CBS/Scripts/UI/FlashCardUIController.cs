@@ -179,6 +179,7 @@ public class FlashCardUIController : MonoBehaviour
     public void Back()
     {
         //AppContext.instance.game.ShowLessonDetail(currentLesson);
+        SoundsManager.instance.PlayClick(6);
         var ui = CBSScriptable.Get<CommonPrefabs>().FlashCardUI;
         currentFlashCard?.StopVideo();
         UIView.HideWindow(ui);

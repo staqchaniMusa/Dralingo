@@ -44,7 +44,7 @@ namespace CBS.Context
 
         public void ShowLessonDetail(int lesson)
         {
-            SoundsManager.instance.PlayClick();
+            SoundsManager.instance.PlayClick(3);
             UIView.HideAll();
             var prefab = Prefabs.LessonDetail;
             GameObject lessonGO = UIView.ShowWindow(prefab);
@@ -52,14 +52,19 @@ namespace CBS.Context
         }
         public void ShowSetting()
         {
-            SoundsManager.instance.PlayClick();
+            SoundsManager.instance.PlayClick(1);
             HideGameContext();
             var prefab = Prefabs.Setting;
             UIView.ShowWindow(prefab);
         }
         public void ShowLessons()
         {
-            //SoundsManager.instance.PlayClick();
+            SoundsManager.instance.PlayClick(3);
+            BackToLesson();
+        }
+        public void BackToLesson()
+        {
+            
             UIView.HideAll();
             HideGameContext();
             var prefab = Prefabs.Lessons;
@@ -68,6 +73,7 @@ namespace CBS.Context
 
         public void ShowQuizUI(int lesson)
         {
+            SoundsManager.instance.PlayClick(5);
             new PopupViewer().ShowLoadingPopup();
             AppContext.instance.DB.LoadQuiz(lesson, result =>
             {
@@ -85,6 +91,7 @@ namespace CBS.Context
         }
         public void ShowFlashCard(int lesson)
         {
+            SoundsManager.instance.PlayClick(4);
             new PopupViewer().ShowLoadingPopup();
             AppContext.instance.DB.LoadFlashCards(lesson, result =>
             {
@@ -103,7 +110,7 @@ namespace CBS.Context
 
         public void HideLessons()
         {
-            SoundsManager.instance.PlayClick();
+            //SoundsManager.instance.PlayClick();
             var prefab = Prefabs.Lessons;
             UIView.HideWindow(prefab);
             ShowGameContext();
@@ -111,7 +118,7 @@ namespace CBS.Context
 
         public void HideGameContext()
         {
-            SoundsManager.instance.PlayClick();
+            //SoundsManager.instance.PlayClick();
             var prefab = Prefabs.GameContext;
             UIView.HideWindow(prefab);
             Dragon.SetActive(false);
@@ -119,7 +126,7 @@ namespace CBS.Context
 
         public void ShowGameContext()
         {
-            SoundsManager.instance.PlayClick();
+            SoundsManager.instance.PlayClick(11);
             UIView.HideAll();
             var prefab = Prefabs.GameContext;
             UIView.ShowWindow(prefab);

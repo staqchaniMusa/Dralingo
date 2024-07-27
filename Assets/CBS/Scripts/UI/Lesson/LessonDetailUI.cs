@@ -58,13 +58,14 @@ public class LessonDetailUI : MonoBehaviour
 
     IEnumerator BackButton()
     {
+        SoundsManager.instance.PlayClick(2);
         yield return new WaitForEndOfFrame();
-        AppContext.instance.game.ShowLessons();
+        AppContext.instance.game.BackToLesson();
         backPress = false;
     }
     public void PauseVideo(bool pause)
     {
-        SoundsManager.instance.PlayClick();
+        SoundsManager.instance.PlayClick(1);
         if (videoPlayer.IsPlayeing)
             videoPlayer.PauseVideo();
         else videoPlayer.PlayVideo();
@@ -229,14 +230,14 @@ public class LessonDetailUI : MonoBehaviour
     }
     void ShowFlashCard()
     {
-        SoundsManager.instance.PlayClick();
+        
         videoPlayer.PauseVideo();
         AppContext.instance.game.ShowFlashCard(currentLesson);
     }
 
     void ShowQuiz()
     {
-        SoundsManager.instance.PlayClick();
+        
         videoPlayer.PauseVideo();
         AppContext.instance.game.ShowQuizUI(currentLesson);
     }
@@ -248,6 +249,6 @@ public class LessonDetailUI : MonoBehaviour
             Title = "Here is your secret code",
             Body = AppContext.instance.game.Lessons[currentLesson].secretCode
         });
-        SoundsManager.instance.PlayClick();
+        SoundsManager.instance.PlayClick(7);
     }
 }

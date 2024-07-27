@@ -36,7 +36,7 @@ namespace CBS.UI
 
         public void OnRegisterAccount()
         {
-            SoundsManager.instance.PlayClick();
+            SoundsManager.instance.PlayClick(0);
             Auth.RegisterAccount();
         }
 
@@ -57,7 +57,7 @@ namespace CBS.UI
         // button click
         public void OnLoginWithMail()
         {
-            SoundsManager.instance.PlayClick();
+            SoundsManager.instance.PlayClick(0);
             if (InputValid())
             {
                
@@ -94,7 +94,7 @@ namespace CBS.UI
 
         public void OnFogotPassword()
         {
-            SoundsManager.instance.PlayClick();
+            SoundsManager.instance.PlayClick(0);
             Auth.ForgotPassword();
         }
 

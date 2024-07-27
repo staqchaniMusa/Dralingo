@@ -2097,7 +2097,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Dragon: {fileID: 1926867912}
-  videoPlayer: {fileID: 122857898}
 --- !u!224 &534679719 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8094141248228979601, guid: 1d768ba929cf9de48ba538b3c92531aa, type: 3}

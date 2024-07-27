@@ -30,6 +30,7 @@ public class SettingUI : MonoBehaviour
 
     public void Logout()
     {
+        SoundsManager.instance.PlayClick();
         CBSModule.Get<CBSAuthModule>().OnLogoutEvent += OnLogout;
         CBSModule.Get<CBSAuthModule>().Logout();
     }

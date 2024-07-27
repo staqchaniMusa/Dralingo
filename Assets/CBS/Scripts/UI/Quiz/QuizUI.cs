@@ -74,11 +74,13 @@ public class QuizUI : MonoBehaviour
     {
         if (allDone)
         {
-            AppContext.instance.game.ShowLessons();
+            AppContext.instance.game.BackToLesson();
+            SoundsManager.instance.PlayClick(2);
             return;
         }
         if(isSingleChoice)
         {
+            
             if (string.IsNullOrEmpty(answerField.text.Trim()))
             {
                 new PopupViewer().ShowSimplePopup(new PopupRequest()
@@ -120,7 +122,8 @@ public class QuizUI : MonoBehaviour
             currentQuestion = -1;
             CheckResult();
         }else {
-        NextQuestion();
+            SoundsManager.instance.PlayClick(8);
+            NextQuestion();
         }
     }
 
@@ -142,6 +145,7 @@ public class QuizUI : MonoBehaviour
         allDone = true;
         if(percent> 80)
         {
+            SoundsManager.instance.PlayClick(9);
             if (AppContext.instance.game.profile != null && AppContext.instance.game.profile.UserLessons != null && currentQuiz < AppContext.instance.game.profile.UserLessons.Count )
             {
                 UserLesson lessson = AppContext.instance.game.profile.UserLessons[currentQuiz];
@@ -160,6 +164,10 @@ public class QuizUI : MonoBehaviour
             data.Add("isUnlocked", true);
             data.Add("hasSecretKey", true);
             AppContext.instance.DB.UpdateLesson(currentQuiz, data);*/
+        }else
+        {
+            SoundsManager.instance.PlayClick(10);
+            
         }
         SingleAnswer.SetActive(false);
         ChoiceAnswer.SetActive(false);
@@ -177,7 +185,7 @@ public class QuizUI : MonoBehaviour
 
     public void BackButtonClicked()
     {
-        SoundsManager.instance.PlayClick();
+        SoundsManager.instance.PlayClick(2);
         AppContext.instance.game.ShowLessonDetail(currentQuiz);
     }
 }
