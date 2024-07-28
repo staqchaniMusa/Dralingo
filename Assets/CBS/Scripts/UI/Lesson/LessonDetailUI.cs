@@ -155,7 +155,7 @@ public class LessonDetailUI : MonoBehaviour
 
     }
 
-    void LoadContent()
+    void LoadContent(int errorCount=0)
     {
         //Debug.Log("Downloading video url...");
         AppContext.instance.DB.LoadFileUrl(AppContext.instance.game.Lessons[currentLesson].videoUrl, result =>
@@ -164,8 +164,10 @@ public class LessonDetailUI : MonoBehaviour
             videoPlayer.LoadVideo(result.ToString());
         }, error =>
         {
-            Debug.Log(error);
-            AppContext.instance.game.ShowError(error);
+            //Debug.Log(error);
+            if (errorCount > 3)
+                AppContext.instance.game.ShowError("Internet connection error");
+            else LoadContent(++errorCount);
         });
     }
     private void OnEnable()
@@ -209,10 +211,16 @@ public class LessonDetailUI : MonoBehaviour
         //AppContext.instance.game.videoPlayer.seekCompleted -= VideoPlayerCompleted;
         //PlayerPrefs.SetInt(quizPrefsKey + currentLesson, 1);
         //PlayerPrefs.SetInt(flasCardPrefsKey + currentLesson, 1);
-        
-        if (string.IsNullOrEmpty(CBSModule.Get<CBSAuthModule>().userId) || AppContext.instance.game.profile != null && AppContext.instance.game.profile.UserLessons != null && AppContext.instance.game.profile.UserLessons.Count == currentLesson)
+        Debug.Log("1");
+        if (string.IsNullOrEmpty(CBSModule.Get<CBSAuthModule>().userId) || AppContext.instance.game.profile != null && AppContext.instance.game.profile.UserLessons != null /*&& (AppContext.instance.game.profile.UserLessons.Count == currentLesson)*/)
         {
-            
+            Debug.Log("2");
+
+            quizBtn.onClick.AddListener(ShowQuiz);
+            flashCardBtn.onClick.AddListener(ShowFlashCard);
+            quizBtn.transform.GetChild(0).gameObject.SetActive(false);
+            flashCardBtn.transform.GetChild(0).gameObject.SetActive(false);
+
             if (!string.IsNullOrEmpty(CBSModule.Get<CBSAuthModule>().userId))
             {
                 UserLesson lessson = new UserLesson();
@@ -220,13 +228,10 @@ public class LessonDetailUI : MonoBehaviour
                 AppContext.instance.DB.UpdateLesson(currentLesson, lessson);
                 AppContext.instance.game.profile.UserLessons.Add(lessson);
             }
-            quizBtn.onClick.AddListener(ShowQuiz);
-            flashCardBtn.onClick.AddListener(ShowFlashCard);
-            quizBtn.transform.GetChild(0).gameObject.SetActive(false);
-            flashCardBtn.transform.GetChild(0).gameObject.SetActive(false);
+            
         }
         
-        normalScreenPauseText.sprite = playImage;
+        //normalScreenPauseText.sprite = playImage;
     }
     void ShowFlashCard()
     {

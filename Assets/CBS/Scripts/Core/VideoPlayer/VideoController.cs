@@ -97,6 +97,7 @@ public class VideoController : MonoBehaviour
         if(!HasWatched)
         {
             hasWatched = true;
+            Debug.Log("Video Watched successfully");
             OnVideoCompleted?.Invoke();
         }
     }
@@ -133,6 +134,7 @@ public class VideoController : MonoBehaviour
     private void OnLoopPointReached(VideoPlayer source)
     {
         isDone = true;
+        OnVidoPlayStatusChanged?.Invoke();
         //OnVideoCompleted?.Invoke();
     }
 

@@ -28,7 +28,7 @@ namespace CBS.Context
         private void Init()
         {
             string url = "https://firebasestorage.googleapis.com/v0/b/app-and-web-firebase.appspot.com/o/" + System.Uri.EscapeDataString(videoLocation);
-            Debug.Log(url);
+            //Debug.Log(url);
             // show background
             var backgroundPrefab = AuthUIData.Background;
             UIView.ShowWindow(backgroundPrefab);

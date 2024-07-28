@@ -44,10 +44,12 @@ public class LessonUI : MonoBehaviour
                 Lessons[i].onClick.AddListener(() => ShowLessonDetail(lesson));
             }
         }
+
+
     }
     void ShowLessonDetail(int lesson)
     {
-        Debug.LogFormat("Lesson No {0} event initialized", lesson);
+        //Debug.LogFormat("Lesson No {0} event initialized", lesson);
         AppContext.instance.game.ShowLessonDetail(lesson);
     }
     bool checkIfNotNull(int lesson)

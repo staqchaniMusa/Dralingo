@@ -39,15 +39,26 @@ public class FirebaseDatabaseManager : MonoBehaviour
             {
                 DataSnapshot snapshot = task.Result;
                 string json = snapshot.GetRawJsonValue();
-                //Debug.Log(json);
+                Debug.Log(json);
                 try
                 {
-                    ProfileData data;
-                    if(!string.IsNullOrEmpty(json))
+                    ProfileData data = null;
+                    if (!string.IsNullOrEmpty(json))
                     {
                         //Debug.Log("Serializing...");
                         data = JsonConvert.DeserializeObject<ProfileData>(json);
-                    }else data = new ProfileData() { UserLessons = new List<UserLesson>() };
+                    }
+                    else {
+                        if (!CBSModule.Get<CBSAuthModule>().isAdmin && data == null)
+                        {
+                            
+                            UserLesson lesson = new UserLesson() { hasClearedLesson = false, hasClearedQuiz = false, hasWatchVideo = false };
+                            data = new ProfileData() { UserLessons = new List<UserLesson> { lesson } };
+                            UpdateLesson(0, lesson);
+                            
+                        }else
+                        data = new ProfileData() { UserLessons = new List<UserLesson>() }; 
+                    }
                         result?.Invoke(data);
                     
                 }
