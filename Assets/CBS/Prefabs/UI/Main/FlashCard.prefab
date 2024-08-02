@@ -699,7 +699,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.00025339826}
+  m_AnchoredPosition: {x: 0, y: 0.000107406944}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &3683355391538998443
@@ -822,8 +822,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 9187927296186677250}
-        m_TargetAssemblyTypeName: FlashCardUI, Assembly-CSharp
+      - m_Target: {fileID: 8894403865414087372}
+        m_TargetAssemblyTypeName: FlashCardUIController, Assembly-CSharp
         m_MethodName: Back
         m_Mode: 1
         m_Arguments:
@@ -956,7 +956,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2944076424176013605}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9977076
+  m_Size: 0.9984373
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
