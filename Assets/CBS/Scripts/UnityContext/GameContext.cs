@@ -27,6 +27,7 @@ namespace CBS.Context
             var prefab = Prefabs.GameContext;
             UIView.ShowWindow(prefab);
             Invoke(nameof(LoadProfile),0.2f);
+            Application.targetFrameRate = 60;
         }
 
         private void LoadProfile()
