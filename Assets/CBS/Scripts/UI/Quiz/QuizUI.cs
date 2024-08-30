@@ -36,6 +36,7 @@ public class QuizUI : MonoBehaviour
         this.data = data;
         currentQuestion = 0;
         this.currentQuiz = currentQuiz;
+        ResultUI.gameObject.SetActive(false);
         Debug.Log(data.Count);
         if(data.Count > 0) 
         NextQuestion();
