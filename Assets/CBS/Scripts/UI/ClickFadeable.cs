@@ -60,4 +60,9 @@ public class ClickFadeable : MonoBehaviour
         fadeable.alpha = to;
         fading = false;
     }
+
+    private void OnApplicationPause(bool pause)
+    {
+        if(!pause) Clicked();
+    }
 }

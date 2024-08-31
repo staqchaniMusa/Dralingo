@@ -207,7 +207,10 @@ public class VideoController : MonoBehaviour
         player.playbackSpeed = Mathf.Clamp(player.playbackSpeed, 0, 10);*/
     }
 
-    
 
+    private void OnApplicationPause(bool pause)
+    {
+       PauseVideo();
+    }
     
 }
