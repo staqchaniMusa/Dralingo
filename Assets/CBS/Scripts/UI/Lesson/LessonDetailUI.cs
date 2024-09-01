@@ -8,6 +8,7 @@ using TMPro;
 using CBS.UI;
 using Unity.VisualScripting;
 using CBS;
+using CBS.Context;
 
 public class LessonDetailUI : MonoBehaviour
 {
@@ -175,6 +176,7 @@ public class LessonDetailUI : MonoBehaviour
         videoPlayer.OnVidoPlayStatusChanged += OnVideoStatusChanged;
         videoPlayer.OnVideoCompleted += OnVideoCompleted;
         videoPlayer.OnVideoPlayerReady += OnVideoPlayerReady;
+        AppContext.instance.game.PlayVideo(false);
     }
 
     private void OnDisable()
@@ -182,6 +184,7 @@ public class LessonDetailUI : MonoBehaviour
         videoPlayer.OnVidoPlayStatusChanged -= OnVideoStatusChanged;
         videoPlayer.OnVideoCompleted -= OnVideoCompleted;
         videoPlayer.OnVideoPlayerReady -= OnVideoPlayerReady;
+        AppContext.instance.game.PlayVideo(true);
     }
 
     void OnVideoStatusChanged()
@@ -256,4 +259,6 @@ public class LessonDetailUI : MonoBehaviour
         });
         SoundsManager.instance.PlayClick(7);
     }
+
+    
 }

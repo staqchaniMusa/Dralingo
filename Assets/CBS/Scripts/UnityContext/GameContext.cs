@@ -2,7 +2,10 @@
 using CBS.UI;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.Timeline;
 using UnityEngine.Video;
+using VRBeats.ScriptableEvents;
 
 namespace CBS.Context
 {
@@ -14,6 +17,11 @@ namespace CBS.Context
         private List<LessonData> lessons;
         public List<LessonData> Lessons { get { return lessons; } set { lessons = value; } }
         public ProfileData profile { get; private set; }
+
+        public AudioMixer mixer;
+
+        public GameEvent OnVideoPlay;
+        public GameEvent OnVideoPause;
         private void Start()
         {
             Init();
@@ -28,8 +36,14 @@ namespace CBS.Context
             UIView.ShowWindow(prefab);
             Invoke(nameof(LoadProfile),0.2f);
             Application.targetFrameRate = 60;
+           
         }
 
+        public void PlayVideo(bool play)
+        {
+            if(play) { OnVideoPlay?.Invoke(); }
+            else { OnVideoPause?.Invoke(); }
+        }
         private void LoadProfile()
         {
             if (string.IsNullOrEmpty(CBSModule.Get<CBSAuthModule>().userId)) return;

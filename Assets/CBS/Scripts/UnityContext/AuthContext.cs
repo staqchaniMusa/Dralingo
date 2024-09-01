@@ -1,7 +1,9 @@
 ﻿
 using CBS.Scriptable;
 using CBS.UI;
+using System.Net.NetworkInformation;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 namespace CBS.Context
@@ -10,7 +12,7 @@ namespace CBS.Context
     {
         [SerializeField]
         private string mainScene;
-
+        [SerializeField] private AudioMixer mixer;
         private AuthPrefabs AuthUIData { get; set; }
         private LoginForm LoginForm { get; set; }
         private AuthData AuthData { get; set; }
@@ -27,6 +29,7 @@ namespace CBS.Context
         string videoLocation = "Lessons/Lesson1/Lesson 1.mp4";
         private void Init()
         {
+           
             string url = "https://firebasestorage.googleapis.com/v0/b/app-and-web-firebase.appspot.com/o/" + System.Uri.EscapeDataString(videoLocation);
             //Debug.Log(url);
             // show background

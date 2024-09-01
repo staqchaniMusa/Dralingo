@@ -4,21 +4,27 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using CBS;
+using UnityEngine.Audio;
 public class SettingUI : MonoBehaviour
 {
     [SerializeField] private Toggle musicToggle;
 
-    private string musicPrefs = "music";    
+    private string musicPrefs = "music";
+
+    public AudioMixer audioMixer;
     // Start is called before the first frame update
     void Start()
     {
         musicToggle.isOn = PlayerPrefs.GetInt(musicPrefs, 1) == 1;
+        
     }
 
     
 
     public void ToggleMusic(bool isOn)
     {
+        Debug.Log(isOn);
+        audioMixer.SetFloat("Music", isOn ? 0f : -80f);
         SoundsManager.instance.PlayClick();
         PlayerPrefs.SetInt(musicPrefs, isOn ? 1 : 0);
     }

@@ -12,5 +12,13 @@ public class BGM : MonoBehaviour
         SoundsManager.instance.PlayBGM(Clip);
     }
 
+    public void StopMusic()
+    {
+        SoundsManager.instance.PauseBGM();
+    }
+    public void ResumeVideo()
+    {
+        SoundsManager.instance.ResumeBGM();
+    }
     
 }

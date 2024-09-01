@@ -184,4 +184,14 @@ public class FlashCardUIController : MonoBehaviour
         currentFlashCard?.StopVideo();
         UIView.HideWindow(ui);
     }
+
+    /*private void OnEnable()
+    {
+        AppContext.instance.game.PlayVideo(false);
+    }
+
+    private void OnDisable()
+    {
+        AppContext.instance.game.PlayVideo(true);
+    }*/
 }
