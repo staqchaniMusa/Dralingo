@@ -149,7 +149,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
     {
         //string firebaseVideoUrl = firebaseBaseUrl + firebaseVideoPath;
         // Initialize Firebase storage reference
-        //Debug.Log("loading File URL of " + filePath);
+        Debug.Log("loading File URL of " + filePath);
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
             if (task.Exception != null)
@@ -162,6 +162,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
             // Create Firebase Storage reference
             Firebase.Storage.StorageReference storageReference = Firebase.Storage.FirebaseStorage.DefaultInstance.GetReferenceFromUrl(filePath);
 
+            Debug.Log("Getting streaming url");
             // Get download URL for streaming
             storageReference.GetDownloadUrlAsync().ContinueWithOnMainThread(downloadTask =>
             {
@@ -171,7 +172,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
                     error?.Invoke($"Failed to get download URL: {downloadTask.Exception.Message}");
                     return;
                 }
-                //Debug.Log(downloadTask.Result.ToString());
+                Debug.Log(downloadTask.Result.ToString());
                 result?.Invoke(downloadTask.Result);
                 // Play video using VideoPlayer
                 //PlayVideo(downloadTask.Result);

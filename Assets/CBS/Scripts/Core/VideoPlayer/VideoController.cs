@@ -119,7 +119,7 @@ public class VideoController : MonoBehaviour
         source.targetTexture.height = source.texture.height;
         source.targetTexture.Create();
         //PlayVideo();
-        // Debug.Log("Video Player is Ready");
+         Debug.Log("Video Player is Ready");
         if (!inBackground)
         {
             PlayVideo();

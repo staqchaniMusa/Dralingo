@@ -158,7 +158,7 @@ public class LessonDetailUI : MonoBehaviour
 
     void LoadContent(int errorCount=0)
     {
-        //Debug.Log("Downloading video url...");
+        Debug.Log("Downloading video url...");
         AppContext.instance.DB.LoadFileUrl(AppContext.instance.game.Lessons[currentLesson].videoUrl, result =>
         {
             
