@@ -9,6 +9,8 @@ using CBS.UI;
 using Unity.VisualScripting;
 using CBS;
 using CBS.Context;
+using RenderHeads.Media.AVProVideo;
+using RenderHeads.Media.AVProVideo.Demos.UI;
 
 public class LessonDetailUI : MonoBehaviour
 {
@@ -24,6 +26,7 @@ public class LessonDetailUI : MonoBehaviour
     [SerializeField] private LoadingScreen loading;
     //[SerializeField] AppContext.instance.game.videoPlayer AppContext.instance.game.videoPlayer;
     [SerializeField] private VideoController videoPlayer;
+    [SerializeField] private MediaPlayer mediaPlayer;
     [SerializeField] Sprite[] lessonsSprites;
     [SerializeField] Sprite playImage, pauseImage;
     [SerializeField] Sprite fullScreenSprite, normalScreenSprite;
@@ -46,14 +49,9 @@ public class LessonDetailUI : MonoBehaviour
     bool backPress;
     public void Back()
     {
-        /*if (backPress) return;
-        backPress = true;
-        if (AppContext.instance.game.videoPlayer.isPlaying) AppContext.instance.game.videoPlayer.Pause();
-        *//*AppContext.instance.game.videoPlayer.prepareCompleted -= Prepared;
-        AppContext.instance.game.videoPlayer.seekCompleted -= VideoPlayerCompleted;*//*
-        //AppContext.instance.game.videoPlayer.EnableAudioTrack(0, false);
-        StartCoroutine(BackButton());*/
-        videoPlayer.PauseVideo();
+       
+        //videoPlayer.PauseVideo();
+        mediaPlayer.Pause();
         StartCoroutine(BackButton());
     }
 
@@ -67,42 +65,86 @@ public class LessonDetailUI : MonoBehaviour
     public void PauseVideo(bool pause)
     {
         SoundsManager.instance.PlayClick(1);
-        if (videoPlayer.IsPlayeing)
+        /*if (videoPlayer.IsPlayeing)
             videoPlayer.PauseVideo();
-        else videoPlayer.PlayVideo();
-        
+        else videoPlayer.PlayVideo();*/
+        if (mediaPlayer && mediaPlayer.Control != null)
+        {
+            if ( mediaPlayer.Info.HasAudio())
+            {
+                if (mediaPlayer.Control.IsPlaying())
+                {
+                    /*if (_overlayManager)
+                    {
+                        _overlayManager.TriggerFeedback(OverlayManager.Feedback.Pause);
+                    }*/
+                    //_isAudioFadingUpToPlay = false;
+                }
+                else
+                {
+                    //_isAudioFadingUpToPlay = true;
+                    Play();
+                }
+                //_audioFadeTime = 0f;
+            }
+            else
+            {
+                if (mediaPlayer.Control.IsPlaying())
+                {
+                    Pause();
+                    normalScreenPauseText.sprite = playImage;
+                }
+                else
+                {
+                    Play();
+                    normalScreenPauseText.sprite = pauseImage;
+                }
+            }
+        }
     }
-    /*void Prepared(VideoPlayer vPlayer)
+
+    private void Play()
     {
-        
-        double maxTime = (AppContext.instance.game.videoPlayer.frameCount / AppContext.instance.game.videoPlayer.frameRate);
-        videoSlider[0].maxValue = (float)maxTime;
-        videoSlider[1].maxValue = (float)maxTime;
-    }*/
+        if (mediaPlayer && mediaPlayer.Control != null)
+        {
+           /* if (_overlayManager)
+            {
+                _overlayManager.TriggerFeedback(OverlayManager.Feedback.Play);
+            }*/
+            mediaPlayer.Play();
+#if UNITY_ANDROID
+					Screen.sleepTimeout = SleepTimeout.NeverSleep;
+#endif
+        }
+    }
+
+    private void Pause(bool skipFeedback = false)
+    {
+        if (mediaPlayer && mediaPlayer.Control != null)
+        {
+            if (!skipFeedback)
+            {
+                /*if (_overlayManager)
+                {
+                    _overlayManager.TriggerFeedback(OverlayManager.Feedback.Pause);
+                }*/
+            }
+            mediaPlayer.Pause();
+#if UNITY_ANDROID
+					Screen.sleepTimeout = SleepTimeout.SystemSetting;
+#endif
+        }
+    }
+
     double previousTime = 0;
     double currentTime = 0;
     int counter = 0;
     public float forwardStep = 0.5f;
     private void Update()
     {
-        loading.gameObject.SetActive(videoPlayer.IsBuffering);
-        /*if (AppContext.instance.game.videoPlayer.isPlaying)
-        {
-            foreach (var item in videoSlider)
-            {
-                
-                currentTime = (AppContext.instance.game.videoPlayer.frame / AppContext.instance.game.videoPlayer.frameRate);
-                item.value = (float)currentTime;
-                if (counter % 30 == 0)
-                {
-                    loading.gameObject.SetActive(previousTime == currentTime);
-                    previousTime = currentTime;
-                    counter = 0;
-                }
-                counter++;
-            }
-        }
-        else loading.gameObject.SetActive(false);*/
+        //loading.gameObject.SetActive(videoPlayer.IsBuffering);
+        //loading.gameObject.SetActive(mediaPlayer.Control.IsPlaying());
+       
     }
     
     public void ShowFullScreen(bool fullScreen)
@@ -128,12 +170,10 @@ public class LessonDetailUI : MonoBehaviour
         videoPlayer.slider = videoSlider[0];
         videoPlayer.slider.value = 0;
         normalScreenPauseText.sprite = playImage;
-        //AppContext.instance.game.videoPlayer.url = AppContext.instance.game.Lessons[lesson].videoUrl;
-        //AppContext.instance.game.videoPlayer.EnableAudioTrack(0, true);
+        
         LoadContent();
         Title.sprite = lessonsSprites[lesson];
-        //AppContext.instance.game.videoPlayer.Play();
-        //normalScreenPauseText.sprite = pauseImage;
+       
         if (CBSModule.Get<CBSAuthModule>().isAdmin || checkIfNotNull(lesson) && AppContext.instance.game.profile.UserLessons[currentLesson].hasWatchVideo)
         {
             quizBtn.transform.GetChild(0).gameObject.SetActive(false);
@@ -150,19 +190,25 @@ public class LessonDetailUI : MonoBehaviour
             Scrubber.GetComponent<Slider>().enabled = true;
         }
         if (CBSModule.Get<CBSAuthModule>().isAdmin || checkIfNotNull(lesson) && AppContext.instance.game.profile.UserLessons[currentLesson].hasClearedLesson) infoBtn.onClick.AddListener(ShowSecretCode);
-        /*if (PlayerPrefs.GetInt(quizPrefsKey + lesson) == 1) quizBtn.onClick.AddListener(ShowQuiz);
-        if (PlayerPrefs.GetInt(flasCardPrefsKey + lesson) == 1) flashCardBtn.onClick.AddListener(ShowFlashCard);
-        if (PlayerPrefs.GetInt(infoPrefsKey + lesson) == 1) infoBtn.onClick.AddListener(ShowSecretCode);*/
-
+       
     }
+    string getUrl(string url)
+    {
+        string newUrl = "";
 
+        newUrl = url.Replace(" ", "%20");
+        Debug.Log(newUrl);
+        return newUrl;
+    }
     void LoadContent(int errorCount=0)
     {
         Debug.Log("Downloading video url...");
         AppContext.instance.DB.LoadFileUrl(AppContext.instance.game.Lessons[currentLesson].videoUrl, result =>
         {
             
-            videoPlayer.LoadVideo(result.ToString());
+            mediaPlayer.OpenMedia(new MediaPath(getUrl(result.ToString()),
+MediaPathType.AbsolutePathOrURL), autoPlay: true);
+            //videoPlayer.LoadVideo(result.ToString());
         }, error =>
         {
             //Debug.Log(error);
@@ -173,18 +219,24 @@ public class LessonDetailUI : MonoBehaviour
     }
     private void OnEnable()
     {
-        videoPlayer.OnVidoPlayStatusChanged += OnVideoStatusChanged;
-        videoPlayer.OnVideoCompleted += OnVideoCompleted;
-        videoPlayer.OnVideoPlayerReady += OnVideoPlayerReady;
+        //videoPlayer.OnVidoPlayStatusChanged += OnVideoStatusChanged;
+        //videoPlayer.OnVideoCompleted += OnVideoCompleted;
+        //videoPlayer.OnVideoPlayerReady += OnVideoPlayerReady;
         AppContext.instance.game.PlayVideo(false);
+        Invoke(nameof(AddEvent), 0.5f);
     }
 
+    void AddEvent()
+    {
+        mediaPlayer.Events.AddListener(HandleEvent);
+    }
     private void OnDisable()
     {
-        videoPlayer.OnVidoPlayStatusChanged -= OnVideoStatusChanged;
-        videoPlayer.OnVideoCompleted -= OnVideoCompleted;
-        videoPlayer.OnVideoPlayerReady -= OnVideoPlayerReady;
+        //videoPlayer.OnVidoPlayStatusChanged -= OnVideoStatusChanged;
+        //videoPlayer.OnVideoCompleted -= OnVideoCompleted;
+        //videoPlayer.OnVideoPlayerReady -= OnVideoPlayerReady;
         AppContext.instance.game.PlayVideo(true);
+        mediaPlayer.Events.RemoveListener(HandleEvent);
     }
 
     void OnVideoStatusChanged()
@@ -211,9 +263,6 @@ public class LessonDetailUI : MonoBehaviour
     }
     void VideoPlayerCompleted()
     {
-        //AppContext.instance.game.videoPlayer.seekCompleted -= VideoPlayerCompleted;
-        //PlayerPrefs.SetInt(quizPrefsKey + currentLesson, 1);
-        //PlayerPrefs.SetInt(flasCardPrefsKey + currentLesson, 1);
         Debug.Log("1");
         if (string.IsNullOrEmpty(CBSModule.Get<CBSAuthModule>().userId) || AppContext.instance.game.profile != null && AppContext.instance.game.profile.UserLessons != null /*&& (AppContext.instance.game.profile.UserLessons.Count == currentLesson)*/)
         {
@@ -238,7 +287,7 @@ public class LessonDetailUI : MonoBehaviour
     }
     void ShowFlashCard()
     {
-        
+        mediaPlayer.Stop();
         videoPlayer.PauseVideo();
         AppContext.instance.game.ShowFlashCard(currentLesson);
     }
@@ -247,6 +296,7 @@ public class LessonDetailUI : MonoBehaviour
     {
         
         videoPlayer.PauseVideo();
+        mediaPlayer.Stop();
         AppContext.instance.game.ShowQuizUI(currentLesson);
     }
 
@@ -260,5 +310,22 @@ public class LessonDetailUI : MonoBehaviour
         SoundsManager.instance.PlayClick(7);
     }
 
-    
+    // This method is called whenever there is an event from the MediaPlayer
+    void HandleEvent(MediaPlayer mp, MediaPlayerEvent.EventType eventType, ErrorCode code)
+    {
+        Debug.Log("MediaPlayer " + mp.name + " generated event: " + eventType.ToString());
+        if (eventType == MediaPlayerEvent.EventType.Error)
+        {
+            Debug.LogError("Error: " + code);
+        }else if(eventType == MediaPlayerEvent.EventType.FinishedBuffering)
+        {
+            loading.gameObject.SetActive(false);
+        }else if(eventType == MediaPlayerEvent.EventType.ReadyToPlay)
+        {
+            loading.gameObject.SetActive(false);
+        }else if(eventType == MediaPlayerEvent.EventType.StartedBuffering)
+        {
+            loading.gameObject.SetActive(true);
+        }
+    }
 }

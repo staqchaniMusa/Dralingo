@@ -1,3 +1,4 @@
+using RenderHeads.Media.AVProVideo;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ public class VideoController : MonoBehaviour
 {
     public Slider slider;
     public VideoPlayer player;
-
+    public MediaPlayer mediaPlayer;
     bool isDone;
     bool hasWatched;
     bool isSeeking;
@@ -33,13 +34,17 @@ public class VideoController : MonoBehaviour
 
     private void OnEnable()
     {
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        if(mediaPlayer != null)
+        {
+            return;
+        }
         player.errorReceived += OnErrorReceived;
         player.loopPointReached += OnLoopPointReached;
         player.frameReady += OnFrameReady;
         player.prepareCompleted += OnPrepareCompleted;
         player.seekCompleted += OnSeekCompleted;
         player.started += OnStarted;
-        Screen.sleepTimeout = SleepTimeout.NeverSleep;
     }
 
   
@@ -212,5 +217,17 @@ public class VideoController : MonoBehaviour
     {
        PauseVideo();
     }
-    
+    // This method is called whenever there is an event from the MediaPlayer
+    void HandleEvent(MediaPlayer mp, MediaPlayerEvent.EventType eventType, ErrorCode code)
+    {
+        Debug.Log("MediaPlayer " + mp.name + " generated event: " + eventType.ToString());
+        if (eventType == MediaPlayerEvent.EventType.Error)
+        {
+            Debug.LogError("Error: " + code);
+        }
+        else if (eventType == MediaPlayerEvent.EventType.FinishedBuffering)
+        {
+            //loading.gameObject.SetActive(false);
+        }
+    }
 }

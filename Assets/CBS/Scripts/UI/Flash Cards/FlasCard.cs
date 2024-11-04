@@ -1,4 +1,5 @@
 using CBS.UI;
+using RenderHeads.Media.AVProVideo;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class FlasCard : MonoBehaviour
 
     [SerializeField] private RawImage cardHolder;
     public VideoController videoController;
+    public MediaPlayer mediaPlayer;
     private FlashCardData Card;
     public bool loadingContent;
     public bool contentTypeisImage {  get; private set; }
@@ -53,7 +55,8 @@ public class FlasCard : MonoBehaviour
     }
     internal void StopVideo()
     {
-        videoController.PauseVideo();
+        videoController?.PauseVideo();
+        mediaPlayer.Stop();
     }
 
     void LoadVideo(string url)
@@ -68,7 +71,9 @@ public class FlasCard : MonoBehaviour
             if(gameObject.activeInHierarchy)
             {
 
-                videoController.LoadVideo(getUrl(result.ToString()));
+                videoController?.LoadVideo(getUrl(result.ToString()));
+                mediaPlayer?.OpenMedia(new MediaPath(result.ToString(),
+MediaPathType.AbsolutePathOrURL), autoPlay: true);
             }
             AppContext.instance.game.ShowLoading(false);
         }, error =>

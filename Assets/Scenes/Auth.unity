@@ -454,8 +454,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 371ebc8d38139b64ea04fda9ff8d9b73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainScene: Main
-  mixer: {fileID: 0}
+  mainScene: Main 1
+  mixer: {fileID: 24100000, guid: af16016b1584e784283bf318e9d0b165, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

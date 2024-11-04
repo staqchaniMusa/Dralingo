@@ -17,5 +17,5 @@ MonoBehaviour:
   QuizUI: {fileID: 1212819640201828697, guid: 4396748cff1fbe345802583bae7c36ef, type: 3}
   FlashCardUI: {fileID: 4817069449813377834, guid: 01937da525bd1814f9c1e057c9435d62, type: 3}
   Setting: {fileID: 1127607048534814217, guid: c994b344051c7414a82f07b4c1a580f8, type: 3}
-  LessonDetail: {fileID: 5909558890156901950, guid: f1237308ab2b52a48a2830b099fad859, type: 3}
+  LessonDetail: {fileID: 5909558890156901950, guid: 18aa6b1df155287489fc33ee0de59245, type: 3}
   GameContext: {fileID: 7233861432975443703, guid: 56f4bd09894cda64eb56b0d15cf97417, type: 3}
