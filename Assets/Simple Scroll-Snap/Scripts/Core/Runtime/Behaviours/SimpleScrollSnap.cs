@@ -631,7 +631,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
         {
            // GoToPanel((int)panelNumber);
         }
-        public void GoToPanel(int panelNumber)
+        public GameObject GoToPanel(int panelNumber)
         {
             CenteredPanel = panelNumber;
             isSelected = true;
@@ -645,6 +645,7 @@ namespace DanielLochner.Assets.SimpleScrollSnap
             {
                 ScrollRect.inertia = false;
             }
+            return Panels[panelNumber].gameObject;
         }
         public void GoToPreviousPanel()
         {

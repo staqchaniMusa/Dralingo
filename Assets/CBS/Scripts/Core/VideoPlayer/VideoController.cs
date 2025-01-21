@@ -1,8 +1,5 @@
-using RenderHeads.Media.AVProVideo;
+
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -10,7 +7,6 @@ public class VideoController : MonoBehaviour
 {
     public Slider slider;
     public VideoPlayer player;
-    public MediaPlayer mediaPlayer;
     bool isDone;
     bool hasWatched;
     bool isSeeking;
@@ -35,10 +31,7 @@ public class VideoController : MonoBehaviour
     private void OnEnable()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
-        if(mediaPlayer != null)
-        {
-            return;
-        }
+        
         player.errorReceived += OnErrorReceived;
         player.loopPointReached += OnLoopPointReached;
         player.frameReady += OnFrameReady;
@@ -53,6 +46,7 @@ public class VideoController : MonoBehaviour
         //PauseVideo();
         Screen.sleepTimeout = SleepTimeout.SystemSetting;
         inBackground = false;
+       
         player.targetTexture.Release();
         player.errorReceived -= OnErrorReceived;
         player.loopPointReached -= OnLoopPointReached;
@@ -75,9 +69,14 @@ public class VideoController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        UpdateVidePlayer();
+    }
+   
+    void UpdateVidePlayer()
+    {
         if (!player.isPrepared || !player.isPlaying || isScrubbing) return;
-        if(!isSeeking)
-        slider.value = (float)NTime;
+        if (!isSeeking)
+            slider.value = (float)NTime;
         // Check if frame count has changed
         if (slider.value == previousFrameCount)
         {
@@ -85,14 +84,13 @@ public class VideoController : MonoBehaviour
             bufferCount++;
         }
         else bufferCount = 0;
-        if(!hasWatched && slider.value > 0.8f)
+        if (!hasWatched && slider.value > 0.8f)
         {
             OnWatchedVideo();
         }
         // Update previous frame count
         previousFrameCount = slider.value;
     }
-
     private void OnStarted(VideoPlayer source)
     {
         
@@ -217,17 +215,5 @@ public class VideoController : MonoBehaviour
     {
        PauseVideo();
     }
-    // This method is called whenever there is an event from the MediaPlayer
-    void HandleEvent(MediaPlayer mp, MediaPlayerEvent.EventType eventType, ErrorCode code)
-    {
-        Debug.Log("MediaPlayer " + mp.name + " generated event: " + eventType.ToString());
-        if (eventType == MediaPlayerEvent.EventType.Error)
-        {
-            Debug.LogError("Error: " + code);
-        }
-        else if (eventType == MediaPlayerEvent.EventType.FinishedBuffering)
-        {
-            //loading.gameObject.SetActive(false);
-        }
-    }
+  
 }

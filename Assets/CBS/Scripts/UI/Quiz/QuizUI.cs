@@ -187,6 +187,7 @@ public class QuizUI : MonoBehaviour
     public void BackButtonClicked()
     {
         SoundsManager.instance.PlayClick(2);
+        gameObject.BroadcastMessage("SetInBackground", false);
         AppContext.instance.game.ShowLessonDetail(currentQuiz);
     }
 }

@@ -8,12 +8,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Auth.unity
     guid: 3fc8acdd13e6c734bafef6554d6fdbcd
-  - enabled: 0
-    path: Assets/Scenes/Main.unity
-    guid: 0e874b40cd2f74f4ca3988b96ef49296
-  - enabled: 0
-    path: Assets/AVProVideo/Demos/Scenes/Demo_MediaPlayer.unity
-    guid: 839cc75f049d0ea44a78c639e529d44a
   - enabled: 1
     path: Assets/Scenes/Main 1.unity
     guid: 2384bf93937401a4b98f20d89ce1e6ca

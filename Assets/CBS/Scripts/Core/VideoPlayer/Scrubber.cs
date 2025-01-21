@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Scrubber : MonoBehaviour
 {
-    [SerializeField] VideoController VideoController;
+    //[SerializeField] VideoController VideoController;
+    [SerializeField] MediaPlayerController VideoController;
     bool isScrubbing;
     public void StartScrub()
     {

@@ -2,6 +2,7 @@ using CBS.UI;
 using RenderHeads.Media.AVProVideo;
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -10,16 +11,20 @@ public class FlasCard : MonoBehaviour
 {
 
     [SerializeField] private RawImage cardHolder;
-    public VideoController videoController;
+    //public VideoController videoController;
     public MediaPlayer mediaPlayer;
+    public GameObject videoContainer;
     private FlashCardData Card;
     public bool loadingContent;
     public bool contentTypeisImage {  get; private set; }
     bool init = false;
     private Texture thumbnail;
+
+    
     private void Start()
     {
         init = true;
+
     }
     internal void LoadContent()
     {
@@ -27,11 +32,12 @@ public class FlasCard : MonoBehaviour
         OnLoadContent?.Invoke(this);
         if (Card.isVideo) { LoadVideo(Card.url); }
         else { LoadImage(Card.url); }
+       
        // Debug.Log("Loading Content...");
     }
     Action<FlasCard> OnLoadContent;
-    Action<Texture> OnFullScreen;
-    internal void SetCardData(FlashCardData card, Action<FlasCard> onLoad,Action<Texture> onFullscreen)
+    Action<Texture, MediaPlayer> OnFullScreen;
+    internal void SetCardData(FlashCardData card, Action<FlasCard> onLoad,Action<Texture,MediaPlayer> onFullscreen)
     {
         this.Card = card;
         this.OnLoadContent = onLoad;
@@ -41,38 +47,44 @@ public class FlasCard : MonoBehaviour
 
     public void FullScreen()
     {
-        thumbnail = this.Card.isVideo ? videoController.player.texture : cardHolder.texture;
-        OnFullScreen?.Invoke(thumbnail);
+        //thumbnail = this.Card.isVideo ? videoController.player.texture : cardHolder.texture;
+        OnFullScreen?.Invoke(cardHolder.texture,mediaPlayer);
     }
     private void OnEnable()
     {
+        //if(init)
         LoadContent();
     }
     private void OnDisable()
     {
-        if(init) 
-        StopVideo();
+        if (init)
+        {
+            StopVideo();
+            if(Card.isVideo)
+            mediaPlayer.Events.RemoveListener(HandleEvent);
+        }
     }
     internal void StopVideo()
     {
-        videoController?.PauseVideo();
-        mediaPlayer.Stop();
+        //videoController?.PauseVideo();
+        if (Card.isVideo)
+            mediaPlayer.Stop();
     }
 
     void LoadVideo(string url)
     {
         //AppContext.instance.game.ShowLoading(true);
         cardHolder.gameObject.SetActive(false);
-        videoController.gameObject.SetActive(true);
+        videoContainer.gameObject.SetActive(true);
         loadingContent = true;
         AppContext.instance.DB.LoadFileUrl(url, result =>
         {
-            loadingContent = false;
+            //loadingContent = false;
             if(gameObject.activeInHierarchy)
             {
 
-                videoController?.LoadVideo(getUrl(result.ToString()));
-                mediaPlayer?.OpenMedia(new MediaPath(result.ToString(),
+                //videoController?.LoadVideo(getUrl(result.ToString()));
+                mediaPlayer?.OpenMedia(new MediaPath(getUrl(result.ToString()),
 MediaPathType.AbsolutePathOrURL), autoPlay: true);
             }
             AppContext.instance.game.ShowLoading(false);
@@ -83,15 +95,18 @@ MediaPathType.AbsolutePathOrURL), autoPlay: true);
             AppContext.instance.game.ShowError("Video Load Error!");
             AppContext.instance.game.ShowLoading(false);
         });
+        mediaPlayer.Events.AddListener(HandleEvent);
     }
 
     private void LoadImage(string url)
     {
-        loadingContent = true;
+        Destroy(mediaPlayer);
+        if (!gameObject.activeInHierarchy) return;
+            loadingContent = true;
         contentTypeisImage = true;
         //AppContext.instance.game.ShowLoading(true);
         cardHolder.gameObject.SetActive(true);
-        videoController.gameObject.SetActive(false);
+        videoContainer.gameObject.SetActive(false);
         if (!string.IsNullOrEmpty(Card.urlOrignal)){
             if (gameObject.activeInHierarchy)
              StartCoroutine(DownloadImageFromUrl(Card.urlOrignal));
@@ -155,5 +170,34 @@ MediaPathType.AbsolutePathOrURL), autoPlay: true);
         loadingContent = false;
         cardHolder.texture = texture;
         //cardHolder.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width,texture.height), Vector2.zero);
+    }
+    // This method is called whenever there is an event from the MediaPlayer
+    void HandleEvent(MediaPlayer mp, MediaPlayerEvent.EventType eventType, ErrorCode code)
+    {
+        // Debug.Log("MediaPlayer " + mp.name + " generated event: " + eventType.ToString());
+        if (eventType == MediaPlayerEvent.EventType.Error)
+        {
+            //Debug.LogError("Error: " + code);
+            loadingContent = false;
+            AppContext.instance.game.ShowError("Video Load Error!");
+        }
+        /* else if (eventType == MediaPlayerEvent.EventType.FinishedBuffering)
+         {
+             loadingContent = false;
+         }
+         else if (eventType == MediaPlayerEvent.EventType.ReadyToPlay)
+         {
+             loadingContent = false;
+         }*/
+        else if (eventType == MediaPlayerEvent.EventType.FirstFrameReady)
+        {
+            loadingContent = false;
+        } else if(eventType == MediaPlayerEvent.EventType.Stalled)
+        {
+            loadingContent = true;
+        }else if(eventType == MediaPlayerEvent.EventType.Unstalled)
+        {
+            loadingContent = false;
+        }
     }
 }

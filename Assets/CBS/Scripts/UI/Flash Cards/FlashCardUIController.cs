@@ -1,6 +1,7 @@
 using CBS.Scriptable;
 using CBS.UI;
 using DanielLochner.Assets.SimpleScrollSnap;
+using RenderHeads.Media.AVProVideo;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
@@ -21,21 +22,24 @@ public class FlashCardUIController : MonoBehaviour
     [SerializeField] GameObject loadingImg;
     [SerializeField] TextMeshProUGUI pageTxt;
     [SerializeField] GameObject fullScreenUI;
+    [SerializeField] DisplayUGUI fullScreenUIVideo;
     private FlasCard currentFlashCard;
-    private VideoController videoController;
+    //private VideoController videoController;
+    private MediaPlayer videoController;
     private bool init;
     private void Update()
     {
+        if (currentFlashCard == null) return;
         if(videoController == null)
         {
-            loadingImg.SetActive(false);
+            loadingImg.SetActive(currentFlashCard.loadingContent);
             return;
         }
         if (!videoController.isActiveAndEnabled) {
             loadingImg.SetActive(currentFlashCard.loadingContent);
             return;
         } 
-        loadingImg.SetActive(currentFlashCard.loadingContent || (!currentFlashCard.contentTypeisImage && videoController.IsBuffering));
+        loadingImg.SetActive(currentFlashCard.loadingContent /*|| (!currentFlashCard.contentTypeisImage *//*&& videoController.Control.IsBuffering()*//*)*/);
     }
     public void InitFlashCards(FlashCardDataCollection cards, int lesson)
     {
@@ -78,7 +82,7 @@ public class FlashCardUIController : MonoBehaviour
         {
             var card = flashCards.flashcards[i];
             var newPanel = SimpleScrollSnap.AddToFront(FlasCard.gameObject);
-            newPanel?.GetComponent<FlasCard>().SetCardData(card,OnLoadContent,(texture)=>FullScreen(texture));
+            newPanel?.GetComponent<FlasCard>().SetCardData(card,OnLoadContent,(texture,mp)=>FullScreen(texture,mp));
             newPanel?.gameObject.SetActive(false);
         }
         //LoadContent(0);
@@ -112,7 +116,8 @@ public class FlashCardUIController : MonoBehaviour
         ClearRenderTexture();
         currentFlashCard = card.GetComponent<FlasCard>();
         //Invoke(nameof(LoadNextFlashCard),0.1f);
-        videoController = currentFlashCard?.videoController;
+        //videoController = currentFlashCard?.videoController;
+        videoController = currentFlashCard?.mediaPlayer;
         int selectedPanel = card.transform.GetSiblingIndex();
         int total = SimpleScrollSnap.NumberOfPanels;
 
@@ -134,7 +139,7 @@ public class FlashCardUIController : MonoBehaviour
         var card = SimpleScrollSnap.GetPanel(index);
         currentFlashCard = card.GetComponent<FlasCard>();
         //Invoke(nameof(LoadNextFlashCard),0.1f);
-        videoController = currentFlashCard?.videoController;
+        //videoController = currentFlashCard?.videoController;
         Debug.Log("Loading card " + index);
         previousIndex = index;
     }
@@ -159,10 +164,17 @@ public class FlashCardUIController : MonoBehaviour
         RenderTexture.active = null;
     }
 
-    public void FullScreen(Texture texture)
+    public void FullScreen(Texture texture,MediaPlayer mediaPlayer)
     {
-        fullScreenUI.GetComponentInChildren<RawImage>().texture = texture;
-        fullScreenUI.SetActive(true);
+        if (mediaPlayer == null)
+        {
+            fullScreenUI.GetComponentInChildren<RawImage>().texture = texture;
+            fullScreenUI.SetActive(true);
+        }else
+        {
+            fullScreenUIVideo.Player = mediaPlayer;
+            fullScreenUIVideo.gameObject.SetActive(true);
+        }
     }
     int barValue;
     public void OnScrollValueChanges(float val)
@@ -183,6 +195,8 @@ public class FlashCardUIController : MonoBehaviour
         var ui = CBSScriptable.Get<CommonPrefabs>().FlashCardUI;
         currentFlashCard?.StopVideo();
         UIView.HideWindow(ui);
+        UIView.GetInstance(CBSScriptable.Get<CommonPrefabs>().LessonDetail)?.GetComponent<LessonDetailUI>().ResumeVideo();
+        
     }
 
     /*private void OnEnable()

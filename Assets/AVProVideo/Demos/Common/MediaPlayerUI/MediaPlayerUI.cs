@@ -118,20 +118,25 @@ namespace RenderHeads.Media.AVProVideo.Demos
 					}
 				#endif
 			}
-			SetupPlayPauseButton();
+            if (_canvasTransform == null)
+            {
+				_canvasTransform = transform.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
+            }
+            SetupPlayPauseButton();
 			SetupTimeBackForwardButtons();
 			SetupVolumeButton();
 			SetupSubtitlesButton();
 			SetupOptionsButton();
 			SetupDebugButton();
 			SetupAudioSpectrum();
-			CreateTimelineDragEvents();
+			//CreateTimelineDragEvents();
 			CreateVideoTouchEvents();
 			CreateVolumeSliderEvents();
 			UpdateVolumeSlider();
 			BuildOptionsMenu();
 		}
 
+		bool timeSliderEventAdded;
 		private struct UserInteraction
 		{
 			public static float InactiveTime;
@@ -527,8 +532,23 @@ namespace RenderHeads.Media.AVProVideo.Demos
 			}
 		}
 
-		private void CreateTimelineDragEvents()
+		public void RemoveTimelineDragEvents()
 		{
+			if(!timeSliderEventAdded) return; timeSliderEventAdded = false;
+            EventTrigger trigger = _sliderTime.gameObject.GetComponent<EventTrigger>();
+			if( trigger != null )
+			{
+				foreach (var item in trigger.triggers)
+				{
+					item.callback.RemoveAllListeners();
+				}
+
+				trigger.triggers.Clear();
+			}
+        }
+		public void CreateTimelineDragEvents()
+		{
+			if (timeSliderEventAdded) return; timeSliderEventAdded = true;
 			EventTrigger trigger = _sliderTime.gameObject.GetComponent<EventTrigger>();
 			if (trigger != null)
 			{
@@ -785,7 +805,8 @@ namespace RenderHeads.Media.AVProVideo.Demos
 				}
 			}
 		}
-
+		bool inBackground;
+		
 		void Update()
 		{
 			if (!_mediaPlayer) return;
@@ -1074,7 +1095,10 @@ namespace RenderHeads.Media.AVProVideo.Demos
 				}
 			}
 		}
-
+		public void TriggerStalled()
+		{
+			_overlayManager.TriggerStalled();
+		}
 		void OnGUI()
 		{
 			if (!_showDebug)

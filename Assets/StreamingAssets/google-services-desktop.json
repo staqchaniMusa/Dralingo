@@ -8,29 +8,22 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1079513832039:ios:bb364a1d220888fe2a92c2",
+        "mobilesdk_app_id": "1:1079513832039:android:f2d0830d673026a02a92c2",
         "android_client_info": {
           "package_name": "com.dralingo.dralingo"
         }
       },
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCoSUYxK8b-t-7PEgm4k20hFmEom3J8HvY"
+          "current_key": "AIzaSyApOn8xIm9zBMzvPaBZlH71yeawuVk-4Kk"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 0
-        },
         "appinvite_service": {
-          "status": 1
+          "other_platform_oauth_client": []
         }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1079513832039-pidvrd3ba0t07n4da3gbpljbemqspjla.apps.googleusercontent.com"
-        }
-      ]
+      }
     }
   ],
   "configuration_version": "1"

@@ -11,6 +11,7 @@ using CBS;
 using CBS.Context;
 using RenderHeads.Media.AVProVideo;
 using RenderHeads.Media.AVProVideo.Demos.UI;
+using RenderHeads.Media.AVProVideo.Demos;
 
 public class LessonDetailUI : MonoBehaviour
 {
@@ -25,8 +26,9 @@ public class LessonDetailUI : MonoBehaviour
     [SerializeField] private Animator screenAnimator;
     [SerializeField] private LoadingScreen loading;
     //[SerializeField] AppContext.instance.game.videoPlayer AppContext.instance.game.videoPlayer;
-    [SerializeField] private VideoController videoPlayer;
+    //[SerializeField] private VideoController videoPlayer;
     [SerializeField] private MediaPlayer mediaPlayer;
+    [SerializeField] private MediaPlayerController videoPlayer;
     [SerializeField] Sprite[] lessonsSprites;
     [SerializeField] Sprite playImage, pauseImage;
     [SerializeField] Sprite fullScreenSprite, normalScreenSprite;
@@ -50,34 +52,37 @@ public class LessonDetailUI : MonoBehaviour
     public void Back()
     {
        
-        //videoPlayer.PauseVideo();
-        mediaPlayer.Pause();
+        videoPlayer.PauseVideo();
+        //mediaPlayer.Pause();
         StartCoroutine(BackButton());
     }
 
+    public MediaPlayerUI playerUI;
     IEnumerator BackButton()
     {
+        //playerUI.SetInBackground(true);
         SoundsManager.instance.PlayClick(2);
         yield return new WaitForEndOfFrame();
         AppContext.instance.game.BackToLesson();
         backPress = false;
     }
+    public void ResumeVideo() { videoPlayer.PlayVideo(); }
     public void PauseVideo(bool pause)
     {
         SoundsManager.instance.PlayClick(1);
-        /*if (videoPlayer.IsPlayeing)
+        if (videoPlayer.IsPlayeing)
             videoPlayer.PauseVideo();
-        else videoPlayer.PlayVideo();*/
-        if (mediaPlayer && mediaPlayer.Control != null)
+        else videoPlayer.PlayVideo();
+       /* if (mediaPlayer && mediaPlayer.Control != null)
         {
-            if ( mediaPlayer.Info.HasAudio())
+            *//*if ( mediaPlayer.Info.HasAudio())
             {
                 if (mediaPlayer.Control.IsPlaying())
                 {
-                    /*if (_overlayManager)
+                    *//*if (_overlayManager)
                     {
                         _overlayManager.TriggerFeedback(OverlayManager.Feedback.Pause);
-                    }*/
+                    }*//*
                     //_isAudioFadingUpToPlay = false;
                 }
                 else
@@ -87,7 +92,7 @@ public class LessonDetailUI : MonoBehaviour
                 }
                 //_audioFadeTime = 0f;
             }
-            else
+            else*//*
             {
                 if (mediaPlayer.Control.IsPlaying())
                 {
@@ -100,7 +105,7 @@ public class LessonDetailUI : MonoBehaviour
                     normalScreenPauseText.sprite = pauseImage;
                 }
             }
-        }
+        }*/
     }
 
     private void Play()
@@ -142,9 +147,8 @@ public class LessonDetailUI : MonoBehaviour
     public float forwardStep = 0.5f;
     private void Update()
     {
-        //loading.gameObject.SetActive(videoPlayer.IsBuffering);
+        loading.gameObject.SetActive(!videoPlayer.IsPrepared);
         //loading.gameObject.SetActive(mediaPlayer.Control.IsPlaying());
-       
     }
     
     public void ShowFullScreen(bool fullScreen)
@@ -162,7 +166,8 @@ public class LessonDetailUI : MonoBehaviour
     }
     public void ShowLessonDetail(int lesson)
     {
-        loading.gameObject.SetActive(true);
+        //loading.gameObject.SetActive(true);
+        playerUI.TriggerStalled();
         currentLesson = lesson;
         quizBtn.onClick.RemoveAllListeners();
         flashCardBtn.onClick.RemoveAllListeners();
@@ -181,12 +186,15 @@ public class LessonDetailUI : MonoBehaviour
             flashCardBtn.onClick.AddListener(ShowFlashCard);
             flashCardBtn.transform.GetChild(0).gameObject.SetActive(false);
             Scrubber.enabled = false;
+           
+            playerUI.CreateTimelineDragEvents();
         }
         else
         {
             quizBtn.transform.GetChild(0).gameObject.SetActive(true);
             flashCardBtn.transform.GetChild(0).gameObject.SetActive(true);
             Scrubber.enabled = true;
+            playerUI.RemoveTimelineDragEvents();
             Scrubber.GetComponent<Slider>().enabled = true;
         }
         if (CBSModule.Get<CBSAuthModule>().isAdmin || checkIfNotNull(lesson) && AppContext.instance.game.profile.UserLessons[currentLesson].hasClearedLesson) infoBtn.onClick.AddListener(ShowSecretCode);
@@ -202,13 +210,15 @@ public class LessonDetailUI : MonoBehaviour
     }
     void LoadContent(int errorCount=0)
     {
-        Debug.Log("Downloading video url...");
+        //Debug.Log("Downloading video url...");
+        loading.gameObject.SetActive(true);
         AppContext.instance.DB.LoadFileUrl(AppContext.instance.game.Lessons[currentLesson].videoUrl, result =>
         {
-            
-            mediaPlayer.OpenMedia(new MediaPath(getUrl(result.ToString()),
-MediaPathType.AbsolutePathOrURL), autoPlay: true);
-            //videoPlayer.LoadVideo(result.ToString());
+            loading.gameObject.SetActive(false);
+            /*mediaPlayer.OpenMedia(new MediaPath(getUrl(result.ToString()),
+MediaPathType.AbsolutePathOrURL), autoPlay: true);*/
+            videoPlayer.LoadVideo(getUrl(result.ToString()));
+            //playerUI.SetInBackground(false);
         }, error =>
         {
             //Debug.Log(error);
@@ -219,24 +229,21 @@ MediaPathType.AbsolutePathOrURL), autoPlay: true);
     }
     private void OnEnable()
     {
-        //videoPlayer.OnVidoPlayStatusChanged += OnVideoStatusChanged;
-        //videoPlayer.OnVideoCompleted += OnVideoCompleted;
-        //videoPlayer.OnVideoPlayerReady += OnVideoPlayerReady;
+        videoPlayer.OnVidoPlayStatusChanged += OnVideoStatusChanged;
+        videoPlayer.OnVideoCompleted += OnVideoCompleted;
+        videoPlayer.OnVideoPlayerReady += OnVideoPlayerReady;
         AppContext.instance.game.PlayVideo(false);
-        Invoke(nameof(AddEvent), 0.5f);
+        //Invoke(nameof(AddEvent), 0.5f);
     }
 
-    void AddEvent()
-    {
-        mediaPlayer.Events.AddListener(HandleEvent);
-    }
+   
     private void OnDisable()
     {
-        //videoPlayer.OnVidoPlayStatusChanged -= OnVideoStatusChanged;
-        //videoPlayer.OnVideoCompleted -= OnVideoCompleted;
-        //videoPlayer.OnVideoPlayerReady -= OnVideoPlayerReady;
+        videoPlayer.OnVidoPlayStatusChanged -= OnVideoStatusChanged;
+        videoPlayer.OnVideoCompleted -= OnVideoCompleted;
+        videoPlayer.OnVideoPlayerReady -= OnVideoPlayerReady;
         AppContext.instance.game.PlayVideo(true);
-        mediaPlayer.Events.RemoveListener(HandleEvent);
+        //mediaPlayer.Events.RemoveListener(HandleEvent);
     }
 
     void OnVideoStatusChanged()
@@ -250,6 +257,7 @@ MediaPathType.AbsolutePathOrURL), autoPlay: true);
         {
             //AppContext.instance.game.videoPlayer.Play();
             normalScreenPauseText.sprite = pauseImage;
+            //playerUI.SetInBackground(false);
         }
     }
     private void OnVideoCompleted()
@@ -259,11 +267,11 @@ MediaPathType.AbsolutePathOrURL), autoPlay: true);
 
     void OnVideoPlayerReady()
     {
-        loading.gameObject.SetActive(false);
+        //loading.gameObject.SetActive(false);
     }
     void VideoPlayerCompleted()
     {
-        Debug.Log("1");
+        Debug.Log("1 Video Watched");
         if (string.IsNullOrEmpty(CBSModule.Get<CBSAuthModule>().userId) || AppContext.instance.game.profile != null && AppContext.instance.game.profile.UserLessons != null /*&& (AppContext.instance.game.profile.UserLessons.Count == currentLesson)*/)
         {
             Debug.Log("2");
@@ -272,7 +280,7 @@ MediaPathType.AbsolutePathOrURL), autoPlay: true);
             flashCardBtn.onClick.AddListener(ShowFlashCard);
             quizBtn.transform.GetChild(0).gameObject.SetActive(false);
             flashCardBtn.transform.GetChild(0).gameObject.SetActive(false);
-
+            playerUI.CreateTimelineDragEvents();
             if (!string.IsNullOrEmpty(CBSModule.Get<CBSAuthModule>().userId))
             {
                 UserLesson lessson = new UserLesson();
@@ -287,16 +295,19 @@ MediaPathType.AbsolutePathOrURL), autoPlay: true);
     }
     void ShowFlashCard()
     {
-        mediaPlayer.Stop();
-        videoPlayer.PauseVideo();
+        //mediaPlayer.Stop();
+        //mediaPlayer.EndOpenChunkedVideoFromBuffer();
+        mediaPlayer.AutoStart = false;
+        videoPlayer?.PauseVideo();
         AppContext.instance.game.ShowFlashCard(currentLesson);
+        //playerUI.SetInBackground(true);
     }
 
     void ShowQuiz()
     {
-        
-        videoPlayer.PauseVideo();
-        mediaPlayer.Stop();
+        mediaPlayer.AutoStart = false;
+        videoPlayer?.PauseVideo();
+        //playerUI.SetInBackground(true);
         AppContext.instance.game.ShowQuizUI(currentLesson);
     }
 
@@ -310,22 +321,5 @@ MediaPathType.AbsolutePathOrURL), autoPlay: true);
         SoundsManager.instance.PlayClick(7);
     }
 
-    // This method is called whenever there is an event from the MediaPlayer
-    void HandleEvent(MediaPlayer mp, MediaPlayerEvent.EventType eventType, ErrorCode code)
-    {
-        Debug.Log("MediaPlayer " + mp.name + " generated event: " + eventType.ToString());
-        if (eventType == MediaPlayerEvent.EventType.Error)
-        {
-            Debug.LogError("Error: " + code);
-        }else if(eventType == MediaPlayerEvent.EventType.FinishedBuffering)
-        {
-            loading.gameObject.SetActive(false);
-        }else if(eventType == MediaPlayerEvent.EventType.ReadyToPlay)
-        {
-            loading.gameObject.SetActive(false);
-        }else if(eventType == MediaPlayerEvent.EventType.StartedBuffering)
-        {
-            loading.gameObject.SetActive(true);
-        }
-    }
+    
 }

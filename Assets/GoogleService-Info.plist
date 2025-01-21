@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1079513832039-joopav9lgt8tmqqicateabipi2hlsd4d.apps.googleusercontent.com</string>
+	<string>1079513832039-8hvdi1is8u8r3b1c7k6pc0dboe5dd0ei.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1079513832039-joopav9lgt8tmqqicateabipi2hlsd4d</string>
+	<string>com.googleusercontent.apps.1079513832039-8hvdi1is8u8r3b1c7k6pc0dboe5dd0ei</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCoSUYxK8b-t-7PEgm4k20hFmEom3J8HvY</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.dralingo.test</string>
+	<string>com.dralingo.app</string>
 	<key>PROJECT_ID</key>
 	<string>app-and-web-firebase</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1079513832039:ios:abd675d326d917592a92c2</string>
+	<string>1:1079513832039:ios:36f1f22894bc14342a92c2</string>
 	<key>DATABASE_URL</key>
 	<string>https://app-and-web-firebase-default-rtdb.firebaseio.com</string>
 </dict>
